@@ -33,7 +33,7 @@ function addEmojiDecorators(string) {
     // Pick between our choices by generating a random int 
     // in the range [0, numChoices)
     var numChoices = 2;
-    var choice = return Math.floor(Math.random() * (numChoices));
+    var choice = Math.floor(Math.random() * (numChoices));
 
     if (choice == 0) {
         // Example:

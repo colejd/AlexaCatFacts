@@ -1,6 +1,5 @@
 {
-    "_comment_catFacts" :  "https://user.xmission.com/~emailbox/catstuff.htm
-                            https://www.factretriever.com/cat-facts",
+    "_comment_catFacts" :  "https://user.xmission.com/~emailbox/catstuff.htm https://www.factretriever.com/cat-facts",
     "catFacts" : [
         "Cats and humans have coexisted for nearly 10,000 years.", 
         "Older cats can at times act aggressively towards kittens.", 
@@ -83,7 +82,7 @@
         "Cats can jump up to 7 times their tail length.",
         "If your cat snores or rolls over on his back to expose his belly, it means he trusts you.",
         "Cats respond better to women than to men, probably due to the fact that women's voices have a higher pitch.",
-        "Cat bites are more likely to become infected than dog bites.",
+        "Cat bites are more likely to become infected than dog bites."
     ],
 
     "prefixes" : [
