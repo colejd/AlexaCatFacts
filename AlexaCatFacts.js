@@ -36,11 +36,13 @@ function addEmojiDecorators(string) {
     var choice = Math.floor(Math.random() * (numChoices));
 
     if (choice == 0) {
+        // Surround text with some emoji.
         // Example:
         // :cat: A group of cats is called a 'clowder'. :cat:
         candidateString = randomEmoji + " " + string + " " + randomEmoji;
     }
     else {
+        // Replace all spaces with some emoji.
         // Example:
         // If :clap: emojis :clap: aren't :clap: good :clap: for :clap:
         // society :clap: then :clap: what :clap: is :clap: this?
@@ -59,12 +61,20 @@ function makeMessage() {
     var randomPostfix = getRandomElement(strings.postfixes);
 
     var fact = randomBaseFact;
+    var machineReadableText = randomBaseFact;
+
+    // Throw in some emojis, why not
+    var emojiIncludeChance = 0.2; // Chance to pass. [0 - 1] range.
+    if(Math.random() < emojiIncludeChance) {
+        fact = addEmojiDecorators(fact);
+    }
 
     // Try to add the selected prefix if there's room and RNG passes
     var prefixIncludeChance = 0.75; // Chance to pass. [0 - 1] range.
     var withPrefix = randomPrefix + " " + fact;
     if(withPrefix.length <= maxMessageLength && Math.random() < prefixIncludeChance) {
         fact = withPrefix;
+        machineReadableText = randomPrefix + " " + machineReadableText;
     }
 
     // Add the selected postfix if there's room and RNG passes
@@ -72,15 +82,13 @@ function makeMessage() {
     var withPostfix = fact + " " + randomPostfix;
     if(withPostfix.length <= maxMessageLength && Math.random() < postfixIncludeChance) {
         fact = withPostfix;
+       machineReadableText = machineReadableText + " " + randomPostfix;
     }
 
-    // Throw in some emojis, why not
-    var emojiIncludeChance = 0.1; // Chance to pass. [0 - 1] range.
-    if(Math.random() < emojiIncludeChance) {
-        fact = addEmojiDecorators(fact);
+    return {
+        "text": fact,
+        "machineReadableText": machineReadableText // Basically just the text without the emojis
     }
-
-    return fact;
 
 }
 
@@ -103,11 +111,7 @@ var handlers = {
     },
 
     'MyIntent': function () {
-        var params = {
-            PhoneNumber: process.env.PHONE_NUMBER,
-            Message: makeMessage()
-        }
-        sendTxtMessage(params, myResult=>{
+        sendTxtMessage(myResult=>{
 
             var say = myResult;
             this.emit(':tell', say);
@@ -131,12 +135,18 @@ var handlers = {
 /////// Helper Function ///////
 ///////////////////////////////
 
-function sendTxtMessage(params, callback) {
+function sendTxtMessage(callback) {
 
     var AWS = require('aws-sdk');
     AWS.config.update({region: AWSregion});
 
     var SNS = new AWS.SNS();
+
+    var message = makeMessage();
+    var params = {
+        PhoneNumber: process.env.PHONE_NUMBER,
+        Message: message.text
+    }
 
     SNS.publish(params, function(err, data){
 
@@ -148,7 +158,7 @@ function sendTxtMessage(params, callback) {
             callback('Error sending text message.');
         } else {
             //var randomConfirmation = getRandomElement(strings.confirmations);
-            var response = "I sent the following cat fact: " + params.Message;
+            var response = "I sent the following cat fact: " + message.machineReadableText;
             callback(response);
         }
 
